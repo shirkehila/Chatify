@@ -3,9 +3,10 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import time
-import queue
+import collections
 from pprint import pprint as pp
 import csv
+import pickle
 
 
 def accept_incoming_connections():
@@ -21,8 +22,8 @@ def accept_incoming_connections():
 def update_client(client):
     """Send the client all the messages he missed"""
     username = clients[client]
-    while not users[username].empty():
-        client.send(users[username].get())
+    while users[username]:
+        client.send(users[username].pop())
         time.sleep(0.1)
 
 
@@ -55,8 +56,9 @@ def broadcast(msg, prefix=""):  # prefix is for name identification.
         sock.send(bytes_msg)
     for user in users:
         if user not in clients.values():
-            users[user].put(bytes_msg)
-    pp(clients)
+            users[user].append(bytes_msg)
+    with open("users_replica.p","wb") as urf:
+        pickle.dump(users,urf)
 
 
 clients = {}
@@ -65,9 +67,7 @@ users = {}  # a queue to store messages for non connected users
 with open('users.csv', mode='r') as f:
     reader = csv.reader(f)
     for user in reader:
-        users[user[0]] = queue.Queue()
-
-pp(users)
+        users[user[0]] = collections.deque()
 
 
 HOST = '127.0.0.1'
