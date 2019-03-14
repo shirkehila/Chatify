@@ -3,7 +3,11 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import tkinter
+import pickle
+import os.path
 
+online = False
+username = ''
 
 def receive():
     """Handles receiving of messages."""
@@ -17,18 +21,46 @@ def receive():
 
 def send(event=None):  # event is passed by binders.
     """Handles sending of messages."""
+    # if client is connecting
+    global online
+    global username
+    if not online:
+        online = True
+        username = my_msg.get()  # set username global variable
+        load_history()
     msg = my_msg.get()
     my_msg.set("")  # Clears input field.
     client_socket.send(bytes(msg, "utf8"))
     if msg == "{quit}":
+        save_history()
         client_socket.close()
         top.quit()
 
 
 def on_closing(event=None):
     """This function is to be called when the window is closed."""
+    save_history()
     my_msg.set("{quit}")
     send()
+
+
+def save_history():
+    """save history listbox using pickle"""
+    global username
+    with open('{}_history.p'.format(username), 'wb') as hf:
+        history = msg_list.get(0, tkinter.END)
+        pickle.dump(history,hf)
+
+
+def load_history():
+    """load history to listbox using pickle"""
+    global username
+    hist_path = '{}_history.p'.format(username)
+    if os.path.isfile(hist_path):
+        with open(hist_path, 'rb') as hf:
+            history = pickle.load(hf)
+            for msg in history:
+                msg_list.insert(tkinter.END, msg)
 
 
 top = tkinter.Tk()

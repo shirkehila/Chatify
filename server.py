@@ -7,6 +7,7 @@ import queue
 from pprint import pprint as pp
 import csv
 
+
 def accept_incoming_connections():
     """Sets up handling for incoming clients."""
     while True:
@@ -17,8 +18,8 @@ def accept_incoming_connections():
         Thread(target=handle_client, args=(client,)).start()
 
 
-
 def update_client(client):
+    """Send the client all the messages he missed"""
     username = clients[client]
     while not users[username].empty():
         client.send(users[username].get())
