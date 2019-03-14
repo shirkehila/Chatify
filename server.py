@@ -62,6 +62,7 @@ clients = {}
 addresses = {}
 users = {}  # a queue to store messages for non connected users
 
+
 with open("users_replica.p","rb") as urf:
     users = pickle.load(urf)
 
