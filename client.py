@@ -9,12 +9,14 @@ import os.path
 online = False
 username = ''
 
+
 def receive():
     """Handles receiving of messages."""
     while True:
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
             msg_list.insert(tkinter.END, msg)
+            save_history()
         except OSError:  # Possibly client has left the chat.
             break
 
@@ -32,14 +34,14 @@ def send(event=None):  # event is passed by binders.
     my_msg.set("")  # Clears input field.
     client_socket.send(bytes(msg, "utf8"))
     if msg == "{quit}":
-        save_history()
+        # save_history()
         client_socket.close()
         top.quit()
 
 
 def on_closing(event=None):
     """This function is to be called when the window is closed."""
-    save_history()
+    # save_history()
     my_msg.set("{quit}")
     send()
 
