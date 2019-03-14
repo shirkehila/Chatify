@@ -6,6 +6,8 @@ import tkinter
 import pickle
 import os.path
 from tkinter import filedialog
+import time
+import ntpath
 
 online = False
 username = ''
@@ -27,11 +29,13 @@ def send(event=None):  # event is passed by binders.
     # if client is connecting
     global online
     global username
+    msg = my_msg.get()
+    if online and msg != '{quit}':
+        msg = '{text}' + msg
     if not online:
         online = True
         username = my_msg.get()  # set username global variable
         load_history()
-    msg = my_msg.get()
     my_msg.set("")  # Clears input field.
     client_socket.send(bytes(msg, "utf8"))
     if msg == "{quit}":
@@ -42,7 +46,15 @@ def send(event=None):  # event is passed by binders.
 
 def send_file(event=None):
     filename = filedialog.askopenfilename()
-    # my_msg.set(filename)
+    client_socket.send(bytes('{file}' + ntpath.basename(filename), "utf8"))
+    time.sleep(0.5)
+    CHUNK_SIZE = 8 * 1024
+    with open(filename, 'rb') as f:
+        data = f.read(CHUNK_SIZE)
+        while data:
+            client_socket.send(data)
+            data = f.read(CHUNK_SIZE)
+
 
 
 def on_closing(event=None):

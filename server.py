@@ -26,6 +26,16 @@ def update_client(client):
         time.sleep(0.1)
 
 
+def get_req_msg(request):
+    """Given a request, the method finds the type of request and msg"""
+    # convert from bytes
+    request = request.decode("utf8")
+    end_type = request.index('}')
+    req_type = request[:end_type+1]
+    msg = request[end_type+1:]
+    return req_type, bytes(msg,"utf8")
+
+
 def handle_client(client):  # Takes client socket as argument.
     """Handles a single client connection."""
 
@@ -34,15 +44,26 @@ def handle_client(client):  # Takes client socket as argument.
     update_client(client)
 
     while True:
-        msg = client.recv(BUFSIZ)
-        if msg != bytes("{quit}", "utf8"):
+        request = client.recv(BUFSIZ)
+        req_type, msg = get_req_msg(request)
+        if req_type == "{text}":
             broadcast(msg, username + ": ")
-        else:
+        elif req_type == "{quit}":
             client.send(bytes("{quit}", "utf8"))
             client.close()
             del clients[client]
             print("%s:%s has disconnected." % addresses[client])
             break
+        elif req_type == "{file}":
+            CHUNK_SIZE = 8 * 1024
+            # here msg holds file name
+            with open("files\{}".format(msg.decode('utf8')), 'wb') as f:
+                chunk = client.recv(CHUNK_SIZE)
+                f.write(chunk)
+                while chunk:
+                    chunk = client.recv(CHUNK_SIZE)
+                    f.write(chunk)
+
 
 
 def broadcast(msg, prefix=""):  # prefix is for name identification.
