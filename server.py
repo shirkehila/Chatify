@@ -53,8 +53,9 @@ def broadcast(msg, prefix=""):  # prefix is for name identification.
     for sock in clients:
         sock.send(bytes_msg)
     for user in users:
-        if user not in clients:
+        if user not in clients.values():
             users[user].put(bytes_msg)
+    pp(clients)
 
 
 clients = {}
