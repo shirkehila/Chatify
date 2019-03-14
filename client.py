@@ -39,6 +39,10 @@ def send(event=None):  # event is passed by binders.
         top.quit()
 
 
+def send_file(event=None):
+    pass
+
+
 def on_closing(event=None):
     """This function is to be called when the window is closed."""
     # save_history()
@@ -81,11 +85,15 @@ msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
 
-entry_field = tkinter.Entry(top, textvariable=my_msg)
+bottom_frame = tkinter.Frame(top)
+entry_field = tkinter.Entry(bottom_frame, textvariable=my_msg)
 entry_field.bind("<Return>", send)
-entry_field.pack()
-send_button = tkinter.Button(top, text="Send", command=send)
-send_button.pack()
+entry_field.pack(side=tkinter.LEFT)
+send_button = tkinter.Button(bottom_frame, text="Send", command=send)
+send_button.pack(side=tkinter.LEFT)
+send_file_button = tkinter.Button(bottom_frame, text="Send File", command=send_file)
+send_file_button.pack(side=tkinter.LEFT)
+bottom_frame.pack()
 
 top.protocol("WM_DELETE_WINDOW", on_closing)
 
