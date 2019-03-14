@@ -22,7 +22,7 @@ def update_client(client):
     """Send the client all the messages he missed"""
     username = clients[client]
     while users[username]:
-        client.send(users[username].pop())
+        client.send(users[username].popleft())
         time.sleep(0.1)
 
 
