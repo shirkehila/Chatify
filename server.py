@@ -32,8 +32,6 @@ def handle_client(client):  # Takes client socket as argument.
     username = client.recv(BUFSIZ).decode("utf8")
     welcome = 'Welcome %s! If you ever want to quit, type {quit} to exit.' % username
     client.send(bytes(welcome, "utf8"))
-    msg = "%s has joined the chat!" % username
-    broadcast(bytes(msg, "utf8"))
     clients[client] = username
     update_client(client)
 
@@ -45,7 +43,6 @@ def handle_client(client):  # Takes client socket as argument.
             client.send(bytes("{quit}", "utf8"))
             client.close()
             del clients[client]
-            broadcast(bytes("%s has left the chat." % username, "utf8"))
             print("%s:%s has disconnected." % addresses[client])
             break
 
