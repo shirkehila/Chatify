@@ -49,6 +49,8 @@ def on_closing(event=None):
 def save_history():
     """save history listbox using pickle"""
     global username
+    if username == '':
+        return
     with open('{}_history.p'.format(username), 'wb') as hf:
         history = msg_list.get(0, tkinter.END)
         pickle.dump(history,hf)
