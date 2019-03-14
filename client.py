@@ -79,14 +79,14 @@ my_msg = tkinter.StringVar()  # For the messages to be sent.
 my_msg.set("Enter username")
 scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
 # Following will contain the messages.
-msg_list = tkinter.Listbox(messages_frame, height=15, width=50, yscrollcommand=scrollbar.set)
+msg_list = tkinter.Listbox(messages_frame, height=15, width=60, yscrollcommand=scrollbar.set)
 scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
 
 bottom_frame = tkinter.Frame(top)
-entry_field = tkinter.Entry(bottom_frame, textvariable=my_msg)
+entry_field = tkinter.Entry(bottom_frame, width=40, textvariable=my_msg)
 entry_field.bind("<Return>", send)
 entry_field.pack(side=tkinter.LEFT)
 send_button = tkinter.Button(bottom_frame, text="Send", command=send)
