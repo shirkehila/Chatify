@@ -26,7 +26,6 @@ def update_client(client):
         time.sleep(0.1)
 
 
-
 def handle_client(client):  # Takes client socket as argument.
     """Handles a single client connection."""
 

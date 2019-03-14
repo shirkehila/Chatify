@@ -5,6 +5,7 @@ from threading import Thread
 import tkinter
 import pickle
 import os.path
+from tkinter import filedialog
 
 online = False
 username = ''
@@ -40,7 +41,8 @@ def send(event=None):  # event is passed by binders.
 
 
 def send_file(event=None):
-    pass
+    filename = filedialog.askopenfilename()
+    # my_msg.set(filename)
 
 
 def on_closing(event=None):
@@ -99,7 +101,7 @@ top.protocol("WM_DELETE_WINDOW", on_closing)
 
 #----Now comes the sockets part----
 HOST = '127.0.0.1'
-PORT = input('Enter port: ')
+PORT = ''
 if not PORT:
     PORT = 33000
 else:
