@@ -61,10 +61,9 @@ def broadcast(msg, prefix=""):  # prefix is for name identification.
 clients = {}
 addresses = {}
 users = {}  # a queue to store messages for non connected users
-with open('users.csv', mode='r') as f:
-    reader = csv.reader(f)
-    for user in reader:
-        users[user[0]] = collections.deque()
+
+with open("users_replica.p","rb") as urf:
+    users = pickle.load(urf)
 
 
 HOST = '127.0.0.1'
