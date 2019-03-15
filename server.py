@@ -55,15 +55,17 @@ def handle_client(client):  # Takes client socket as argument.
             print("%s:%s has disconnected." % addresses[client])
             break
         elif req_type == "{file}":
-            CHUNK_SIZE = 8 * 1024
+            CHUNK_SIZE = 1 * 1024
             # here msg holds file name
-            with open("files\{}".format(msg.decode('utf8')), 'wb') as f:
-                chunk = client.recv(CHUNK_SIZE)
-                f.write(chunk)
-                while chunk:
-                    chunk = client.recv(CHUNK_SIZE)
-                    f.write(chunk)
-
+            msg_parts = msg.decode('utf8').split('|')
+            with open("files\{}".format(msg_parts[0]), 'wb') as f:
+                for i in range(int(msg_parts[1])):
+                    # print('receiving data...')
+                    data = client.recv(CHUNK_SIZE)
+                    if not data:
+                        break
+                    # write data to a file
+                    f.write(data)
 
 
 def broadcast(msg, prefix=""):  # prefix is for name identification.

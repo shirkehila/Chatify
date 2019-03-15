@@ -8,6 +8,7 @@ import os.path
 from tkinter import filedialog
 import time
 import ntpath
+from math import ceil
 
 online = False
 username = ''
@@ -46,14 +47,19 @@ def send(event=None):  # event is passed by binders.
 
 def send_file(event=None):
     filename = filedialog.askopenfilename()
-    client_socket.send(bytes('{file}' + ntpath.basename(filename), "utf8"))
-    time.sleep(0.5)
-    CHUNK_SIZE = 8 * 1024
+    filesize = os.path.getsize(filename)
+    CHUNK_SIZE = 1024
+    chunks = ceil(filesize/CHUNK_SIZE)
+    msg = '{file}' + ntpath.basename(filename) + '|'+str(chunks)
+    client_socket.send(bytes(msg,'utf8'))
+    print(str(chunks))
+    time.sleep(1)
+
     with open(filename, 'rb') as f:
-        data = f.read(CHUNK_SIZE)
-        while data:
-            client_socket.send(data)
-            data = f.read(CHUNK_SIZE)
+        chunk = f.read(CHUNK_SIZE)
+        while (chunk):
+            client_socket.send(chunk, 0)
+            chunk = f.read(CHUNK_SIZE)
 
 
 
