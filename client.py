@@ -9,6 +9,7 @@ from tkinter import filedialog
 import time
 import ntpath
 from math import ceil
+from tkinter import ttk
 
 online = False
 username = ''
@@ -42,7 +43,7 @@ def send(event=None):  # event is passed by binders.
     if msg == "{quit}":
         # save_history()
         client_socket.close()
-        top.quit()
+        root.quit()
 
 
 def send_file(event=None):
@@ -91,10 +92,13 @@ def load_history():
                 msg_list.insert(tkinter.END, msg)
 
 
-top = tkinter.Tk()
-top.title("Chatter")
+root = tkinter.Tk()
+note = ttk.Notebook(root)
+chat_tab = ttk.Frame(note)
+files_tab = ttk.Frame(note)
+root.title("Chatter")
 
-messages_frame = tkinter.Frame(top)
+messages_frame = tkinter.Frame(chat_tab)
 my_msg = tkinter.StringVar()  # For the messages to be sent.
 my_msg.set("Enter username")
 scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
@@ -105,7 +109,7 @@ msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
 
-bottom_frame = tkinter.Frame(top)
+bottom_frame = tkinter.Frame(chat_tab)
 entry_field = tkinter.Entry(bottom_frame, width=40, textvariable=my_msg)
 entry_field.bind("<Return>", send)
 entry_field.pack(side=tkinter.LEFT)
@@ -115,7 +119,10 @@ send_file_button = tkinter.Button(bottom_frame, text="Send File", command=send_f
 send_file_button.pack(side=tkinter.LEFT)
 bottom_frame.pack()
 
-top.protocol("WM_DELETE_WINDOW", on_closing)
+note.add(chat_tab, text='chat')
+note.add(files_tab, text='files')
+note.pack()
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 #----Now comes the sockets part----
 HOST = '127.0.0.1'
