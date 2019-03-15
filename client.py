@@ -21,6 +21,7 @@ def receive():
         try:
             msg = client_socket.recv(BUFSIZ).decode("utf8")
             msg_list.insert(tkinter.END, msg)
+            msg_list.yview(tkinter.END)
             save_history()
         except OSError:  # Possibly client has left the chat.
             break
