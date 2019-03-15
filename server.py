@@ -58,7 +58,9 @@ def handle_client(client):  # Takes client socket as argument.
             CHUNK_SIZE = 1 * 1024
             # here msg holds file name
             msg_parts = msg.decode('utf8').split('|')
-            with open("files\{}".format(msg_parts[0]), 'wb') as f:
+            filename = msg_parts[0]
+            broadcast(bytes("{} has sent file: {}".format(clients[client], filename),'utf8'))
+            with open("files\{}".format(filename), 'wb') as f:
                 for i in range(int(msg_parts[1])):
                     # print('receiving data...')
                     data = client.recv(CHUNK_SIZE)
