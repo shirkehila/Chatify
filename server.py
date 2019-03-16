@@ -49,10 +49,6 @@ def handle_client(client):  # Takes client socket as argument.
         if req_type == "{text}":
             broadcast(msg, username + ": ")
         elif req_type == "{quit}":
-            try:
-                client.send(bytes("{quit}", "utf8"))
-            except ConnectionResetError as e:
-                print(e)
             client.close()
             del clients[client]
             print("%s:%s has disconnected." % addresses[client])
