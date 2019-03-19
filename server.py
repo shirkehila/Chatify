@@ -49,6 +49,11 @@ def handle_client(client):  # Takes client socket as argument.
         if req_type == "{text}":
             broadcast(msg, username + ": ")
         elif req_type == "{quit}":
+            try:
+                client.send(bytes("{quit}", "utf8"))
+            except ConnectionResetError as e:
+                print(e)
+
             client.close()
             del clients[client]
             print("%s:%s has disconnected." % addresses[client])
@@ -80,6 +85,11 @@ def broadcast(msg, prefix=""):  # prefix is for name identification.
     with open("users_replica.p","wb") as urf:
         pickle.dump(users,urf)
 
+
+def unicast(client, msg, type=""):
+    """Unicasts a message to a clients."""
+    bytes_msg = bytes(type,"utf8") + msg
+    client.send(bytes_msg)
 
 clients = {}
 addresses = {}

@@ -10,6 +10,7 @@ import time
 import ntpath
 from math import ceil
 from tkinter import ttk
+from directory import DirTree
 
 online = False
 username = ''
@@ -64,7 +65,6 @@ def send_file(event=None):
             chunk = f.read(CHUNK_SIZE)
 
 
-
 def on_closing(event=None):
     """This function is to be called when the window is closed."""
     # save_history()
@@ -109,6 +109,10 @@ scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
+
+path_to_my_project = r"files"
+app = DirTree(files_tab, path=path_to_my_project)
+
 
 bottom_frame = tkinter.Frame(chat_tab)
 entry_field = tkinter.Entry(bottom_frame, width=40, textvariable=my_msg)
