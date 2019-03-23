@@ -78,7 +78,7 @@ def send_file(event=None):
 
     with open(filename, 'rb') as f:
         chunk = f.read(CHUNK_SIZE)
-        while (chunk):
+        while chunk:
             client_socket.send(chunk, 0)
             chunk = f.read(CHUNK_SIZE)
 
