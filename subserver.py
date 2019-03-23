@@ -5,7 +5,7 @@ from threading import Thread
 from sqllite_ import DB
 
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
+PORT = 65432  # Port to listen on (non-privileged ports are > 1023)
 
 
 def handle_clients():
@@ -17,7 +17,7 @@ def handle_clients():
             data_dec = data.decode("utf8")
             req_type, content = tuple(data_dec.split('|'))
             req_type = int(req_type)
-            if 1<=req_type<=3:
+            if 1 <= req_type <= 2:
                 content = content.split(";")
                 username = content[0]
                 password = content[1]
@@ -32,12 +32,6 @@ def handle_clients():
                         response = 1
                 response = str(response)
                 conn.sendall(bytes(response, encoding="utf-8"))
-            #elif type >= 10:
-             #   if type == 10:
-              #      tr = translator.translate(content, dest='fr')
-               # else:
-                #    tr = translator.translate(content, dest='la')
-                #conn.send(bytes(tr.text, encoding='utf-8'))
 
 
 BUFSIZ = 1024
@@ -45,7 +39,6 @@ ADDR = (HOST, PORT)
 
 SERVER = socket(AF_INET, SOCK_STREAM)
 SERVER.bind(ADDR)
-
 
 if __name__ == "__main__":
     db = DB()

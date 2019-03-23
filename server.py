@@ -10,8 +10,8 @@ import pickle
 from classify import Classifier
 import os
 
-
 username = ""
+
 
 def save_username(uname):
     global username
@@ -20,7 +20,7 @@ def save_username(uname):
 
 model_path = 'model.gensim'
 dict_name = 'dictionary'
-c = Classifier(model_path,dict_name)
+c = Classifier(model_path, dict_name)
 
 
 def accept_incoming_connections():
@@ -45,9 +45,9 @@ def get_req_msg(request):
     # convert from bytes
     request = request.decode("utf8")
     end_type = request.index('}')
-    req_type = request[:end_type+1]
-    msg = request[end_type+1:]
-    return req_type, bytes(msg,"utf8")
+    req_type = request[:end_type + 1]
+    msg = request[end_type + 1:]
+    return req_type, bytes(msg, "utf8")
 
 
 def handle_client(client):  # Takes client socket as argument.
@@ -84,7 +84,7 @@ def handle_client(client):  # Takes client socket as argument.
             filename = msg_parts[0]
             name, extension = os.path.splitext(filename)
 
-            broadcast(bytes("{} has sent file: {}".format(clients[client], filename),'utf8'))
+            broadcast(bytes("{} has sent file: {}".format(clients[client], filename), 'utf8'))
             with open("files\{}".format(filename), 'wb') as f:
                 for i in range(int(msg_parts[1])):
                     # print('receiving data...')
@@ -94,7 +94,7 @@ def handle_client(client):  # Takes client socket as argument.
                     # write data to a file
                     f.write(data)
             print(extension)
-            if extension =='.txt':
+            if extension == '.txt':
                 with open("files\{}".format(filename, 'rt')) as tf:
                     line = tf.readline()
                     print(line)
@@ -107,31 +107,30 @@ def handle_client(client):  # Takes client socket as argument.
                     pp(c.classify(text))
 
 
-def broadcast(msg, prefix="", req_type = "{text}"):  # prefix is for name identification.
+def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identification.
     """Broadcasts a message to all the clients."""
-    bytes_msg = bytes(req_type+prefix, "utf8") + msg
+    bytes_msg = bytes(req_type + prefix, "utf8") + msg
     for sock in clients:
         sock.send(bytes_msg)
     for user in users:
         if user not in clients.values():
             users[user].append(bytes_msg)
-    with open("users_replica.p","wb") as urf:
-        pickle.dump(users,urf)
+    with open("users_replica.p", "wb") as urf:
+        pickle.dump(users, urf)
 
 
-def unicast(client, msg, type="", req_type = "{text}"):
+def unicast(client, msg, type="", req_type="{text}"):
     """Unicasts a message to a clients."""
-    bytes_msg = bytes(req_type+type,"utf8") + msg
+    bytes_msg = bytes(req_type + type, "utf8") + msg
     client.send(bytes_msg)
+
 
 clients = {}
 addresses = {}
 users = {}  # a queue to store messages for non connected users
 
-
-with open("users_replica.p","rb") as urf:
+with open("users_replica.p", "rb") as urf:
     users = pickle.load(urf)
-
 
 HOST = '127.0.0.1'
 PORT = 33000

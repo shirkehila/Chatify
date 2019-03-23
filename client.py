@@ -16,18 +16,20 @@ from sign_up_in import MyApp
 online = False
 cur_username = ""
 
+
 def change_uname(uname):
     global cur_username
     cur_username = uname
+
 
 def get_req_msg(request):
     """Given a request, the method finds the type of request and msg"""
     # convert from bytes
     request = request.decode("utf8")
     end_type = request.index('}')
-    req_type = request[:end_type+1]
-    msg = request[end_type+1:]
-    return req_type, bytes(msg,"utf8")
+    req_type = request[:end_type + 1]
+    msg = request[end_type + 1:]
+    return req_type, bytes(msg, "utf8")
 
 
 def receive():
@@ -68,9 +70,9 @@ def send_file(event=None):
     filename = filedialog.askopenfilename()
     filesize = os.path.getsize(filename)
     CHUNK_SIZE = 1024
-    chunks = ceil(filesize/CHUNK_SIZE)
-    msg = '{file}' + ntpath.basename(filename) + '|'+str(chunks)
-    client_socket.send(bytes(msg,'utf8'))
+    chunks = ceil(filesize / CHUNK_SIZE)
+    msg = '{file}' + ntpath.basename(filename) + '|' + str(chunks)
+    client_socket.send(bytes(msg, 'utf8'))
     print(str(chunks))
     time.sleep(1)
 
@@ -95,7 +97,7 @@ def save_history():
         return
     with open('{}_history.p'.format(username), 'wb') as hf:
         history = msg_list.get(0, tkinter.END)
-        pickle.dump(history,hf)
+        pickle.dump(history, hf)
 
 
 def load_history():
@@ -117,7 +119,7 @@ root.title("Chatter")
 
 messages_frame = tkinter.Frame(chat_tab)
 my_msg = tkinter.StringVar()  # For the messages to be sent.
-#my_msg.configure(state=tkinter.DISABLED)
+# my_msg.configure(state=tkinter.DISABLED)
 scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
 # Following will contain the messages.
 msg_list = tkinter.Listbox(messages_frame, height=15, width=60, yscrollcommand=scrollbar.set)
@@ -128,7 +130,6 @@ messages_frame.pack()
 
 path_to_my_project = r"files"
 app = DirTree(files_tab, path=path_to_my_project)
-
 
 bottom_frame = tkinter.Frame(chat_tab)
 entry_field = tkinter.Entry(bottom_frame, width=40, textvariable=my_msg)
@@ -145,7 +146,6 @@ note.add(files_tab, text='files')
 note.pack()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
-
 sign = MyApp()
 sign.run()
 cur_username = sign.get_username()
@@ -153,9 +153,7 @@ if cur_username == "":
     exit()
 my_msg.set(cur_username)
 
-
-
-#----Now comes the sockets part----
+# ----Now comes the sockets part----
 HOST = '127.0.0.1'
 PORT = ''
 if not PORT:
