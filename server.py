@@ -7,6 +7,20 @@ import collections
 from pprint import pprint as pp
 import csv
 import pickle
+from classify import Classifier
+import os
+
+
+username = ""
+
+def save_username(uname):
+    global username
+    username = uname
+
+
+model_path = 'model.gensim'
+dict_name = 'dictionary'
+c = Classifier(model_path,dict_name)
 
 
 def accept_incoming_connections():
@@ -63,6 +77,8 @@ def handle_client(client):  # Takes client socket as argument.
             # here msg holds file name
             msg_parts = msg.decode('utf8').split('|')
             filename = msg_parts[0]
+            name, extension = os.path.splitext(filename)
+
             broadcast(bytes("{} has sent file: {}".format(clients[client], filename),'utf8'))
             with open("files\{}".format(filename), 'wb') as f:
                 for i in range(int(msg_parts[1])):
@@ -72,6 +88,18 @@ def handle_client(client):  # Takes client socket as argument.
                         break
                     # write data to a file
                     f.write(data)
+            print(extension)
+            if extension =='.txt':
+                with open("files\{}".format(filename, 'rt')) as tf:
+                    line = tf.readline()
+                    print(line)
+                    text = ""
+                    while line:
+                        text += line
+                        line = tf.readline()
+                        print(line)
+                    pp(text)
+                    pp(c.classify(text))
 
 
 def broadcast(msg, prefix=""):  # prefix is for name identification.

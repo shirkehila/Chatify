@@ -11,9 +11,14 @@ import ntpath
 from math import ceil
 from tkinter import ttk
 from directory import DirTree
+from sign_up_in import MyApp
 
 online = False
-username = ''
+cur_username = ""
+
+def change_uname(uname):
+    global cur_username
+    cur_username = uname
 
 
 def receive():
@@ -101,7 +106,7 @@ root.title("Chatter")
 
 messages_frame = tkinter.Frame(chat_tab)
 my_msg = tkinter.StringVar()  # For the messages to be sent.
-my_msg.set("Enter username")
+#my_msg.configure(state=tkinter.DISABLED)
 scrollbar = tkinter.Scrollbar(messages_frame)  # To navigate through past messages.
 # Following will contain the messages.
 msg_list = tkinter.Listbox(messages_frame, height=15, width=60, yscrollcommand=scrollbar.set)
@@ -129,6 +134,14 @@ note.add(files_tab, text='files')
 note.pack()
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
+
+sign = MyApp()
+sign.run()
+cur_username = sign.get_username()
+my_msg.set(cur_username)
+
+
+
 #----Now comes the sockets part----
 HOST = '127.0.0.1'
 PORT = ''
@@ -145,4 +158,5 @@ client_socket.connect(ADDR)
 
 receive_thread = Thread(target=receive)
 receive_thread.start()
+send()
 tkinter.mainloop()  # Starts GUI execution.

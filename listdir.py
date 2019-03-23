@@ -17,3 +17,8 @@ directory = []
 my_path = r'C:\Users\Shir\Pictures\allGroups'
 process_directory(directory,my_path)
 print(directory)
+
+filename, file_extension = os.path.splitext("classify.py")
+
+print(file_extension)
+
