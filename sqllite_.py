@@ -52,16 +52,6 @@ class DB():
         return correct
 
 
-
-conn = sqlite3.connect("chatify.db")
-
-c = conn.cursor()
-#c.execute("CREATE TABLE users (username text, password text)")
-#conn.commit()
-
-conn.close()
-
 db = DB()
 pp(db.get_all_users())
-
 

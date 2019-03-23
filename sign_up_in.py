@@ -1,5 +1,5 @@
 import kivy
-from sqllite_ import DB
+from db_client import DB
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.core.window import Window
 
@@ -44,8 +44,13 @@ class SignUp(Screen):
             popup = MyPopup(title="Password and validation don't match")
             popup.open()
             return False
-        elif db.user_exists(username):
+        check = db.add_user(username, passw)
+        if check == 0:
             popup = MyPopup(title="Username already exists")
+            popup.open()
+            return False
+        elif check == -2:
+            popup = MyPopup(title="Connectivity problem")
             popup.open()
             return False
         return True
@@ -58,6 +63,7 @@ class SignIn(Screen):
             logged_user = username
             MyApp.get_running_app().stop()
             Window.close()
+
     def check_user_pass(self, username, passw):
         if db.check_user_pass(username, passw) == -1:
             popup = MyPopup(title="Username doesn't exists")

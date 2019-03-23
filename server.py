@@ -55,7 +55,12 @@ def handle_client(client):  # Takes client socket as argument.
 
     username = client.recv(BUFSIZ).decode("utf8")
     clients[client] = username
-    update_client(client)
+    if username not in users:
+        users[username] = collections.deque()
+        with open("users_replica.p", "wb") as urf:
+            pickle.dump(users, urf)
+    else:
+        update_client(client)
 
     while True:
         request = client.recv(BUFSIZ)

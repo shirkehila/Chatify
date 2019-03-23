@@ -138,6 +138,8 @@ root.protocol("WM_DELETE_WINDOW", on_closing)
 sign = MyApp()
 sign.run()
 cur_username = sign.get_username()
+if cur_username == "":
+    exit()
 my_msg.set(cur_username)
 
 
