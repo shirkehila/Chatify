@@ -20,15 +20,26 @@ def change_uname(uname):
     global cur_username
     cur_username = uname
 
+def get_req_msg(request):
+    """Given a request, the method finds the type of request and msg"""
+    # convert from bytes
+    request = request.decode("utf8")
+    end_type = request.index('}')
+    req_type = request[:end_type+1]
+    msg = request[end_type+1:]
+    return req_type, bytes(msg,"utf8")
+
 
 def receive():
     """Handles receiving of messages."""
     while True:
         try:
-            msg = client_socket.recv(BUFSIZ).decode("utf8")
-            msg_list.insert(tkinter.END, msg)
-            msg_list.yview(tkinter.END)
-            save_history()
+            req = client_socket.recv(BUFSIZ)
+            req_type, msg = get_req_msg(req)
+            if req_type == "{text}":
+                msg_list.insert(tkinter.END, msg)
+                msg_list.yview(tkinter.END)
+                save_history()
         except OSError:  # Possibly client has left the chat.
             break
 

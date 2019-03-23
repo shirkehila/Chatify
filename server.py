@@ -107,9 +107,9 @@ def handle_client(client):  # Takes client socket as argument.
                     pp(c.classify(text))
 
 
-def broadcast(msg, prefix=""):  # prefix is for name identification.
+def broadcast(msg, prefix="", req_type = "{text}"):  # prefix is for name identification.
     """Broadcasts a message to all the clients."""
-    bytes_msg = bytes(prefix, "utf8") + msg
+    bytes_msg = bytes(req_type+prefix, "utf8") + msg
     for sock in clients:
         sock.send(bytes_msg)
     for user in users:
@@ -119,9 +119,9 @@ def broadcast(msg, prefix=""):  # prefix is for name identification.
         pickle.dump(users,urf)
 
 
-def unicast(client, msg, type=""):
+def unicast(client, msg, type="", req_type = "{text}"):
     """Unicasts a message to a clients."""
-    bytes_msg = bytes(type,"utf8") + msg
+    bytes_msg = bytes(req_type+type,"utf8") + msg
     client.send(bytes_msg)
 
 clients = {}
