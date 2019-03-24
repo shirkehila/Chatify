@@ -42,8 +42,14 @@ def receive():
                 msg_list.insert(tkinter.END, msg)
                 msg_list.yview(tkinter.END)
                 save_history()
+            elif req_type == "{tree}":
+                app.process_xml(msg)
         except OSError:  # Possibly client has left the chat.
             break
+
+
+def request(req_type, msg=""):
+    client_socket.send(bytes(req_type+msg, "utf8"))
 
 
 def send(event=None):  # event is passed by binders.
@@ -53,14 +59,15 @@ def send(event=None):  # event is passed by binders.
     global username
     msg = my_msg.get()
     if online and msg != '{quit}':
-        msg = '{text}' + msg
+        request("{text}", msg)
     if not online:
         online = True
         username = my_msg.get()  # set username global variable
         load_history()
+        request("",msg)
     my_msg.set("")  # Clears input field.
-    client_socket.send(bytes(msg, "utf8"))
     if msg == "{quit}":
+        request("", msg)
         # save_history()
         client_socket.close()
         root.quit()
@@ -111,6 +118,10 @@ def load_history():
                 msg_list.insert(tkinter.END, msg)
 
 
+def load_tree():
+    request("{tree}")
+
+
 root = tkinter.Tk()
 note = ttk.Notebook(root)
 chat_tab = ttk.Frame(note)
@@ -129,7 +140,13 @@ msg_list.pack()
 messages_frame.pack()
 
 path_to_my_project = r"files"
-app = DirTree(files_tab, path=path_to_my_project)
+tree_frame = tkinter.Frame(files_tab)
+app = DirTree(tree_frame)
+tree_frame.pack()
+btns_frame = tkinter.Frame(files_tab)
+get_tree_button = tkinter.Button(btns_frame, text="Load Tree", command=load_tree)
+get_tree_button.pack(side=tkinter.LEFT)
+btns_frame.pack()
 
 bottom_frame = tkinter.Frame(chat_tab)
 entry_field = tkinter.Entry(bottom_frame, width=40, textvariable=my_msg)

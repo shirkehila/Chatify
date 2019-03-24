@@ -1,24 +1,20 @@
 import os
+from xml.sax.saxutils import quoteattr as xml_quoteattr
+from directory import DirTree
+import tkinter
 
-def process_directory(direct, path):
-    for p in os.listdir(path):
-        abspath = os.path.join(path, p)
-        isdir = os.path.isdir(abspath)
-        if isdir:
-            subdir = (p, [])
-            process_directory(subdir[1], abspath)
-        else:
-            filename, file_extension = os.path.splitext(p)
-            direct.append((filename,file_extension))
+def DirAsXML(path):
+    result = '<dir name=%s>\n' % xml_quoteattr(os.path.basename(path))
+    for item in os.listdir(path):
+        itempath = os.path.join(path, item)
+        if os.path.isdir(itempath):
+            result += '\n'.join('  ' + line for line in
+                DirAsXML(os.path.join(path, item)).split('\n'))
+        elif os.path.isfile(itempath):
+            result += '    <file name=%s />\n' % xml_quoteattr(item)
+    result += '</dir>'
+    return result
 
 
-
-directory = []
-my_path = r'C:\Users\Shir\Pictures\allGroups'
-process_directory(directory,my_path)
-print(directory)
-
-filename, file_extension = os.path.splitext("classify.py")
-
-print(file_extension)
+#filename, file_extension = os.path.splitext("classify.py")
 

@@ -9,6 +9,7 @@ import csv
 import pickle
 from classify import Classifier
 import os
+from listdir import DirAsXML
 
 username = ""
 
@@ -105,6 +106,9 @@ def handle_client(client):  # Takes client socket as argument.
                         print(line)
                     pp(text)
                     pp(c.classify(text))
+        elif req_type == "{tree}":
+            msg = bytes(DirAsXML('files'), encoding='utf-8')
+            unicast(client,msg, "{tree}")
 
 
 def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identification.
@@ -119,9 +123,9 @@ def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identifi
         pickle.dump(users, urf)
 
 
-def unicast(client, msg, type="", req_type="{text}"):
+def unicast(client, msg, req_type="{text}"):
     """Unicasts a message to a clients."""
-    bytes_msg = bytes(req_type + type, "utf8") + msg
+    bytes_msg = bytes(req_type, "utf8") + msg
     client.send(bytes_msg)
 
 

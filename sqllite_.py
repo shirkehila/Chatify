@@ -2,7 +2,7 @@ import sqlite3
 from pprint import pprint as pp
 
 
-class DB():
+class DB:
     def __init__(self):
         self._db_name = 'chatify.db'
         self._conn = None
@@ -50,8 +50,3 @@ class DB():
             correct = 1
         self.disconnect_db()
         return correct
-
-
-db = DB()
-pp(db.get_all_users())
-
