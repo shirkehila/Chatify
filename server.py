@@ -94,7 +94,6 @@ def handle_client(client):  # Takes client socket as argument.
                         break
                     # write data to a file
                     f.write(data)
-            print(extension)
             if extension == '.txt':
                 with open("files\{}".format(filename, 'rt')) as tf:
                     line = tf.readline()
@@ -109,6 +108,7 @@ def handle_client(client):  # Takes client socket as argument.
         elif req_type == "{tree}":
             msg = bytes(DirAsXML('files'), encoding='utf-8')
             unicast(client,msg, "{tree}")
+
 
 
 def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identification.
