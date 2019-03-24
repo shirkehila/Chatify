@@ -8,11 +8,11 @@ def DirAsXML(path):
     for item in os.listdir(path):
         itempath = os.path.join(path, item)
         if os.path.isdir(itempath):
-            result += '\n'.join('  ' + line for line in
+            result += '\n'.join('   ' + line for line in
                 DirAsXML(os.path.join(path, item)).split('\n'))
         elif os.path.isfile(itempath):
             result += '    <file name=%s />\n' % xml_quoteattr(item)
-    result += '</dir>'
+    result += '</dir>\n'
     return result
 
 

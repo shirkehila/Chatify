@@ -5,13 +5,14 @@ from threading import Thread
 import tkinter
 import pickle
 import os.path
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 import time
 import ntpath
 from math import ceil
 from tkinter import ttk
 from directory import DirTree
 from sign_up_in import MyApp
+from bar import Bar
 
 online = False
 cur_username = ""
@@ -22,6 +23,29 @@ def change_uname(uname):
     cur_username = uname
 
 
+def popup(data, topic, words):
+    def clicked_ok():
+        print("ok")
+        request("{ok}",str(topic))
+        win.destroy()
+
+    def clicked_cancel():
+        print("cancel")
+        win.destroy()
+    win = tkinter.Toplevel()
+    win.wm_title("Classification")
+    vals = [x[1] for x in data]
+
+    bar = Bar(win, data, topic, words)
+
+    bar.grid(row=0, column=0)
+    btns = tkinter.Frame(win)
+    ok = ttk.Button(btns, text="Okay", command=clicked_ok)
+    ok.grid(row=0, column=0)
+    cancel = ttk.Button(btns, text="Cancel", command=clicked_cancel)
+    cancel.grid(row=0, column=1)
+    btns.grid(row=1, column=0)
+
 def get_req_msg(request):
     """Given a request, the method finds the type of request and msg"""
     # convert from bytes
@@ -29,7 +53,7 @@ def get_req_msg(request):
     end_type = request.index('}')
     req_type = request[:end_type + 1]
     msg = request[end_type + 1:]
-    return req_type, bytes(msg, "utf8")
+    return req_type, msg
 
 
 def receive():
@@ -43,7 +67,13 @@ def receive():
                 msg_list.yview(tkinter.END)
                 save_history()
             elif req_type == "{tree}":
+                messagebox.showinfo("Title", msg)
                 app.process_xml(msg)
+            elif req_type == "{class}":
+                #server sends recommendation for classification
+                dmp = client_socket.recv(BUFSIZ)
+                classif = pickle.loads(dmp)
+                popup(classif[0], classif[1], classif[2])
         except OSError:  # Possibly client has left the chat.
             break
 
@@ -58,7 +88,7 @@ def send(event=None):  # event is passed by binders.
     global online
     global username
     msg = my_msg.get()
-    if online and msg != '{quit}':
+    if online and msg != '{quit}' and msg !="":
         request("{text}", msg)
     if not online:
         online = True
@@ -88,6 +118,8 @@ def send_file(event=None):
         while chunk:
             client_socket.send(chunk, 0)
             chunk = f.read(CHUNK_SIZE)
+
+
 
 
 def on_closing(event=None):
@@ -178,7 +210,8 @@ if not PORT:
 else:
     PORT = int(PORT)
 
-BUFSIZ = 1024
+BUFSIZ = 1024*8
+
 ADDR = (HOST, PORT)
 
 client_socket = socket(AF_INET, SOCK_STREAM)

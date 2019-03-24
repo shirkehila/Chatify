@@ -7,7 +7,7 @@ import nltk
 from nltk.corpus import wordnet as wn
 from spacy.lang.en import English
 
-model_path = 'model.gensim'
+model_path = 'news.gensim'
 dict_name = 'dictionary'
 en_stop = set(nltk.corpus.stopwords.words('english'))
 parser = English()
@@ -20,9 +20,9 @@ def tokenize(text):
         if token.orth_.isspace():
             continue
         elif token.like_url:
-            lda_tokens.append('URL')
+            continue
         elif token.orth_.startswith('@'):
-            lda_tokens.append('SCREEN_NAME')
+            continue
         else:
             lda_tokens.append(token.lower_)
     return lda_tokens
@@ -60,3 +60,26 @@ class Classifier:
 
     def doc2bow_tokens(self,tokens):
         return self._dictionary.doc2bow(tokens)
+
+    def class_and_words(self, text):
+        """gets text and returns:
+        1.percentage for classification
+        2.topic with highest probabilty
+        3.top words for the topic"""
+        # classification with percentage
+        perc = self.classify(text)
+        data_d = {x: y for x, y in perc}
+        data_d = sorted(data_d, key=data_d.get, reverse=True)
+        topic = data_d[0]
+        # top words for highest probabilty
+        words = self.get_topics(10)[topic]
+        t_words = words[1].split('"')
+        t_words = [w for w in t_words if w.isalpha()]
+        t_words = ", ".join(t_words)
+        t_words = t_words
+        return perc, topic, t_words
+
+
+c = Classifier(model_path, dict_name)
+
+pp(c.get_topics(3))

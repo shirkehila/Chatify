@@ -38,6 +38,7 @@ class DirTree(tk.Frame):
 
     def process_xml(self, xml):
         root = ET.fromstring(xml)
+
         self.tree.delete(*(self.tree).get_children())
         self.process_tree("", root)
 
@@ -46,7 +47,7 @@ class DirTree(tk.Frame):
             isdir = True if child.tag == 'dir' else False
             if isdir:
                 oid = self.tree.insert(parent, 'end', text=child.attrib['name'])
-                self.process_xml(oid, child)
+                self.process_tree(oid, child)
             else:
                 file = child.attrib['name']
                 filename, file_extension = os.path.splitext(file)

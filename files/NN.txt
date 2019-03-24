@@ -1,0 +1,1 @@
+A neural network is a network composed of nodes, which are connected. Each connection has a weight and bias and these are a first randomly picked. Out goal is to decrease the cost function.

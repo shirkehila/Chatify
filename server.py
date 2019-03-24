@@ -12,16 +12,25 @@ import os
 from listdir import DirAsXML
 
 username = ""
-
+cur_path = ""
 
 def save_username(uname):
     global username
     username = uname
 
 
-model_path = 'model.gensim'
+model_path = 'news2.gensim'
 dict_name = 'dictionary'
 c = Classifier(model_path, dict_name)
+
+
+def move_file(cur_path, new_path):
+    try:
+        os.rename(cur_path, new_path)
+    except FileExistsError:
+        filename, file_extension = os.path.splitext(new_path)
+        new_path=filename+"(1)"+file_extension
+        move_file(cur_path, new_path)
 
 
 def accept_incoming_connections():
@@ -95,7 +104,10 @@ def handle_client(client):  # Takes client socket as argument.
                     # write data to a file
                     f.write(data)
             if extension == '.txt':
-                with open("files\{}".format(filename, 'rt')) as tf:
+                unicast(client, bytes("sending classes", 'utf-8'), "{class}")
+                global cur_path
+                cur_path = "files\{}".format(filename, 'rt')
+                with open(cur_path) as tf:
                     line = tf.readline()
                     print(line)
                     text = ""
@@ -103,8 +115,19 @@ def handle_client(client):  # Takes client socket as argument.
                         text += line
                         line = tf.readline()
                         print(line)
-                    pp(text)
-                    pp(c.classify(text))
+                response = c.class_and_words(text)
+                client.send(pickle.dumps(response))
+        elif req_type == "{ok}":
+            # client agrees to the classification
+            msg = msg.decode('utf-8')
+            cur_dir = os.path.dirname(cur_path)
+            base_name = os.path.basename(cur_path)
+            new_dir = os.path.join(cur_dir,msg)
+            new_path = os.path.join(new_dir,base_name)
+            if not os.path.exists(new_dir):
+                os.makedirs(new_dir)
+            move_file(cur_path, new_path)
+
         elif req_type == "{tree}":
             msg = bytes(DirAsXML('files'), encoding='utf-8')
             unicast(client,msg, "{tree}")
@@ -136,9 +159,11 @@ users = {}  # a queue to store messages for non connected users
 with open("users_replica.p", "rb") as urf:
     users = pickle.load(urf)
 
+
+
 HOST = '127.0.0.1'
 PORT = 33000
-BUFSIZ = 1024
+BUFSIZ = 1024*8
 ADDR = (HOST, PORT)
 
 SERVER = socket(AF_INET, SOCK_STREAM)
