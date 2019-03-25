@@ -16,12 +16,11 @@ from bar import Bar
 
 online = False
 cur_username = ""
-
+cur_path = ""
 
 def change_uname(uname):
     global cur_username
     cur_username = uname
-
 
 def popup(data, topic, words):
     def clicked_ok():
@@ -67,13 +66,29 @@ def receive():
                 msg_list.yview(tkinter.END)
                 save_history()
             elif req_type == "{tree}":
-                messagebox.showinfo("Title", msg)
                 app.process_xml(msg)
             elif req_type == "{class}":
                 #server sends recommendation for classification
                 dmp = client_socket.recv(BUFSIZ)
                 classif = pickle.loads(dmp)
                 popup(classif[0], classif[1], classif[2])
+            elif req_type == "{download}":
+                global cur_path
+                filename = os.path.basename(cur_path)
+                CHUNK_SIZE = 1 * 1024
+                file_size= int(msg)
+                parts = ceil(file_size / CHUNK_SIZE)
+                file_path = os.path.join(cur_username, filename)
+                if not os.path.exists(cur_username):
+                    os.makedirs(cur_username)
+                with open(file_path, 'wb') as f:
+                    for i in range(parts):
+                        print('receiving data...')
+                        data = client_socket.recv(CHUNK_SIZE)
+                        if not data:
+                            break
+                        # write data to a file
+                        f.write(data)
         except OSError:  # Possibly client has left the chat.
             break
 
@@ -118,6 +133,15 @@ def send_file(event=None):
         while chunk:
             client_socket.send(chunk, 0)
             chunk = f.read(CHUNK_SIZE)
+
+
+
+def download():
+    path = app.get_selected_path()
+    if path:
+        request("{download}",path)
+        global cur_path
+        cur_path = path
 
 
 
@@ -178,7 +202,10 @@ tree_frame.pack()
 btns_frame = tkinter.Frame(files_tab)
 get_tree_button = tkinter.Button(btns_frame, text="Load Tree", command=load_tree)
 get_tree_button.pack(side=tkinter.LEFT)
+download_button = tkinter.Button(btns_frame, text="Download", command=download)
+download_button.pack(side=tkinter.LEFT)
 btns_frame.pack()
+
 
 bottom_frame = tkinter.Frame(chat_tab)
 entry_field = tkinter.Entry(bottom_frame, width=40, textvariable=my_msg)

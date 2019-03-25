@@ -132,7 +132,18 @@ def handle_client(client):  # Takes client socket as argument.
             msg = bytes(DirAsXML('files'), encoding='utf-8')
             unicast(client,msg, "{tree}")
 
-
+        elif req_type == "{download}":
+            path = os.path.join("files",msg.decode('utf-8'))
+            fsize = os.path.getsize(path)
+            unicast(client,bytes(str(fsize),'utf-8'),"{download}")
+            CHUNK_SIZE = 1024
+            print(path)
+            with open(path, 'rb') as f:
+                chunk = f.read(CHUNK_SIZE)
+                while chunk:
+                    client.send(chunk, 0)
+                    chunk = f.read(CHUNK_SIZE)
+                print("done")
 
 def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identification.
     """Broadcasts a message to all the clients."""

@@ -82,4 +82,4 @@ class Classifier:
 
 c = Classifier(model_path, dict_name)
 
-pp(c.get_topics(3))
+pp(c.get_topics(10))

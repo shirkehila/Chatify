@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import tkinter.ttk as ttk
 import xml.etree.ElementTree as ET
+from tkinter import messagebox
 
 
 class DirTree(tk.Frame):
@@ -52,3 +53,22 @@ class DirTree(tk.Frame):
                 file = child.attrib['name']
                 filename, file_extension = os.path.splitext(file)
                 oid = self.tree.insert(parent, 'end', text=filename, open=False, values=(file_extension[1:]))
+
+
+    def get_selected_path(self):
+        item_id = self.tree.focus()
+        try:
+             f_type = self.tree.item(item_id)['values'][0]
+        except IndexError:
+            messagebox.showinfo("Error", "You tried to download a directory")
+            return None
+        return self.get_selected_rec(item_id) + '.' + f_type
+
+    def get_selected_rec(self, item_id):
+        print(self.tree.item(item_id))
+        name = self.tree.item(item_id)['text']
+        print(name)
+        if self.tree.parent(item_id) == "":
+            return name
+        return os.path.join(self.get_selected_rec(self.tree.parent(item_id)), name)
+
