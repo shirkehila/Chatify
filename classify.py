@@ -1,11 +1,11 @@
 import gensim
 from gensim.test.utils import datapath, get_tmpfile
-from gensim.corpora.dictionary import Dictionary
 from gensim.corpora import Dictionary
-from pprint import pprint as pp
 import nltk
 from nltk.corpus import wordnet as wn
 from spacy.lang.en import English
+from nltk.corpus import wordnet
+from nltk.stem import WordNetLemmatizer
 
 
 class Classifier:
@@ -14,6 +14,7 @@ class Classifier:
         self._dictionary = Dictionary.load_from_text(get_tmpfile(dict_name))
         self._en_stop = set(nltk.corpus.stopwords.words('english'))
         self._parser = English()
+        self._lemmatizer = WordNetLemmatizer()
 
     def tokenize(self,text):
         lda_tokens = []
@@ -29,18 +30,24 @@ class Classifier:
                 lda_tokens.append(token.lower_)
         return lda_tokens
 
-    def get_lemma(self,word):
-        lemma = wn.morphy(word)
-        if lemma is None:
-            return word
-        else:
-            return lemma
+    def get_wordnet_pos(self, word):
+        """Map POS tag to first character lemmatize() accepts"""
+        tag = nltk.pos_tag([word])[0][1][0].upper()
+        tag_dict = {"J": wordnet.ADJ,
+                    "N": wordnet.NOUN,
+                    "V": wordnet.VERB,
+                    "R": wordnet.ADV}
+
+        return tag_dict.get(tag, wordnet.NOUN)
+
+    def lemmatize(self, tokens):
+        return [self._lemmatizer.lemmatize(w, self.get_wordnet_pos(w)) for w in tokens]
 
     def prepare_text_for_lda(self,text):
         tokens = self.tokenize(text)
         tokens = [token for token in tokens if len(token) > 4]
         tokens = [token for token in tokens if token not in self._en_stop]
-        tokens = [self.get_lemma(token) for token in tokens]
+        tokens = self.lemmatize(tokens)
         return tokens
 
     def classify(self,text):

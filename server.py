@@ -142,6 +142,12 @@ def handle_client(client):  # Takes client socket as argument.
                     chunk = f.read(CHUNK_SIZE)
                 print("done")
 
+        elif req_type == "{rename}":
+            old_name, new_name = msg.decode('utf-8').split('|')
+            new_name = "files/" + new_name
+            old_name = "files/" + old_name
+            os.rename(old_name, new_name)
+
 
 def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identification.
     """Broadcasts a message to all the clients."""
