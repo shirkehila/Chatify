@@ -2,8 +2,10 @@ import tkinter as tk
 from operator import itemgetter
 
 # Define the data points
+
+
 class Bar(tk.Frame):
-    def __init__(self, master, data,topic, t_words):
+    def __init__(self, master, data, topic, t_words):
         tk.Frame.__init__(self, master)
         c_width = 30 + 30*len(data)  # Define it's width
         print(data)

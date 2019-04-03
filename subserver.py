@@ -26,7 +26,6 @@ def handle_clients():
                     response = str(db.check_user_pass(username, password))
                 elif req_type == 2:
                     if db.user_exists(username):
-
                         response = 0
                     else:
                         db.add_user(username, password)

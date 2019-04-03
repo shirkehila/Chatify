@@ -52,8 +52,7 @@ class DirTree(tk.Frame):
             else:
                 file = child.attrib['name']
                 filename, file_extension = os.path.splitext(file)
-                oid = self.tree.insert(parent, 'end', text=filename, open=False, values=(file_extension[1:]))
-
+                self.tree.insert(parent, 'end', text=filename, open=False, values=(file_extension[1:]))
 
     def get_selected_path(self):
         item_id = self.tree.focus()

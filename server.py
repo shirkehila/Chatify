@@ -14,17 +14,14 @@ from listdir import DirAsXML
 username = ""
 cur_path = ""
 
-def save_username(uname):
-    global username
-    username = uname
 
-
-model_path = 'news2.gensim'
-dict_name = 'dictionary'
+model_path = 'news20.gensim'
+dict_name = 'dictionary20'
 c = Classifier(model_path, dict_name)
 
 
 def move_file(cur_path, new_path):
+    """move file from old path to new path"""
     try:
         os.rename(cur_path, new_path)
     except FileExistsError:
@@ -145,6 +142,7 @@ def handle_client(client):  # Takes client socket as argument.
                     chunk = f.read(CHUNK_SIZE)
                 print("done")
 
+
 def broadcast(msg, prefix="", req_type="{text}"):  # prefix is for name identification.
     """Broadcasts a message to all the clients."""
     bytes_msg = bytes(req_type + prefix, "utf8") + msg
@@ -167,9 +165,6 @@ clients = {}
 addresses = {}
 users = {}  # a queue to store messages for non connected users
 
-with open("users_replica.p", "rb") as urf:
-    users = pickle.load(urf)
-
 
 
 HOST = '127.0.0.1'
@@ -181,6 +176,8 @@ SERVER = socket(AF_INET, SOCK_STREAM)
 SERVER.bind(ADDR)
 
 if __name__ == "__main__":
+    with open("users_replica.p", "rb") as urf:
+        users = pickle.load(urf)
     SERVER.listen(5)
     print("Waiting for connection...")
     ACCEPT_THREAD = Thread(target=accept_incoming_connections)

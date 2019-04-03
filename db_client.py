@@ -3,9 +3,7 @@
 import socket
 
 
-
-
-class DB():
+class DBC:
     def __init__(self):
         self.HOST = '127.0.0.1'  # The server's hostname or IP address
         self.PORT = 65432  # The port used by the server

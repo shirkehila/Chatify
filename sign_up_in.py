@@ -1,28 +1,23 @@
 import kivy
-from db_client import DB
+from db_client import DBC
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.app import App
+from kivy.lang import Builder
 from kivy.core.window import Window
+from kivy.uix.popup import Popup
 
-db = DB()
+db = DBC()
 
 logged_user = ''
 
 kivy.require('1.8.0')  # replace with your current kivy version !
 
-from kivy.app import App
-from kivy.lang import Builder
-from kivy.config import Config
-from kivy.core.window import Window
-
 Window.size = (400, 130)
-
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
 
 
 class MyPopup(Popup):
     pass
+
 
 class SignUp(Screen):
     def handle_submit(self, username, passw, v_passw):

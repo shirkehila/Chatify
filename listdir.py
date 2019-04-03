@@ -1,7 +1,6 @@
 import os
 from xml.sax.saxutils import quoteattr as xml_quoteattr
-from directory import DirTree
-import tkinter
+
 
 def DirAsXML(path):
     result = '<dir name=%s>\n' % xml_quoteattr(os.path.basename(path))
@@ -14,7 +13,3 @@ def DirAsXML(path):
             result += '    <file name=%s />\n' % xml_quoteattr(item)
     result += '</dir>\n'
     return result
-
-
-#filename, file_extension = os.path.splitext("classify.py")
-

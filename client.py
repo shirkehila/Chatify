@@ -5,7 +5,7 @@ from threading import Thread
 import tkinter
 import pickle
 import os.path
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 import time
 import ntpath
 from math import ceil
@@ -18,9 +18,6 @@ online = False
 cur_username = ""
 cur_path = ""
 
-def change_uname(uname):
-    global cur_username
-    cur_username = uname
 
 def popup(data, topic, words):
     def clicked_ok():
@@ -44,6 +41,7 @@ def popup(data, topic, words):
     cancel = ttk.Button(btns, text="Cancel", command=clicked_cancel)
     cancel.grid(row=0, column=1)
     btns.grid(row=1, column=0)
+
 
 def get_req_msg(request):
     """Given a request, the method finds the type of request and msg"""
@@ -231,20 +229,17 @@ my_msg.set(cur_username)
 
 # ----Now comes the sockets part----
 HOST = '127.0.0.1'
-PORT = ''
-if not PORT:
-    PORT = 33000
-else:
-    PORT = int(PORT)
+PORT = 33000
 
 BUFSIZ = 1024*8
 
 ADDR = (HOST, PORT)
 
-client_socket = socket(AF_INET, SOCK_STREAM)
-client_socket.connect(ADDR)
+if __name__ == "__main__":
+    client_socket = socket(AF_INET, SOCK_STREAM)
+    client_socket.connect(ADDR)
 
-receive_thread = Thread(target=receive)
-receive_thread.start()
-send()
-tkinter.mainloop()  # Starts GUI execution.
+    receive_thread = Thread(target=receive)
+    receive_thread.start()
+    send()
+    tkinter.mainloop()  # Starts GUI execution.
